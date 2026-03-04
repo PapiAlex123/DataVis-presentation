@@ -6,9 +6,9 @@ import numpy as np
 
 st.title("Interactive Data Visualization with Plotly")
 
-# ----------------------------
+# -----------------------------
 # Dataset
-# ----------------------------
+# -----------------------------
 data = {
     "year":[2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025],
     "avg_solve_time":[28,22,18,20,24,30,34,38,42,44,45],
@@ -23,9 +23,9 @@ data = {
 
 df = pd.DataFrame(data)
 
-# ----------------------------
-# Sidebar menu
-# ----------------------------
+# -----------------------------
+# Sidebar Menu
+# -----------------------------
 chart_type = st.sidebar.selectbox(
     "Select Visualization",
     [
@@ -37,21 +37,22 @@ chart_type = st.sidebar.selectbox(
         "Box Plot",
         "Bubble Chart",
         "Correlation Heatmap",
-        "Scatter Matrix"
+        "Scatter Matrix",
+        "3D Scatter Plot"
     ]
 )
 
-# ----------------------------
+# -----------------------------
 # Dataset
-# ----------------------------
+# -----------------------------
 if chart_type == "Dataset":
 
     st.subheader("Rubik's Cube Performance Dataset")
     st.dataframe(df)
 
-# ----------------------------
+# -----------------------------
 # Line Chart
-# ----------------------------
+# -----------------------------
 elif chart_type == "Line Chart":
 
     fig = px.line(
@@ -69,18 +70,13 @@ elif chart_type == "Line Chart":
 
     if st.checkbox("Show Code"):
         st.code("""
-fig = px.line(
-    df,
-    x="year",
-    y=["avg_solve_time","best_solve_time"],
-    markers=True
-)
+fig = px.line(df, x="year", y=["avg_solve_time","best_solve_time"], markers=True)
 fig.show()
 """, language="python")
 
-# ----------------------------
+# -----------------------------
 # Scatter Plot
-# ----------------------------
+# -----------------------------
 elif chart_type == "Scatter Plot":
 
     fig = px.scatter(
@@ -96,20 +92,9 @@ elif chart_type == "Scatter Plot":
 
     st.plotly_chart(fig, use_container_width=True)
 
-    if st.checkbox("Show Code"):
-        st.code("""
-fig = px.scatter(
-    df,
-    x="practice_hours",
-    y="avg_solve_time",
-    color="stress_level"
-)
-fig.show()
-""", language="python")
-
-# ----------------------------
+# -----------------------------
 # Bar Chart
-# ----------------------------
+# -----------------------------
 elif chart_type == "Bar Chart":
 
     fig = px.bar(
@@ -125,19 +110,9 @@ elif chart_type == "Bar Chart":
 
     st.plotly_chart(fig, use_container_width=True)
 
-    if st.checkbox("Show Code"):
-        st.code("""
-fig = px.bar(
-    df,
-    x="year",
-    y="practice_hours"
-)
-fig.show()
-""", language="python")
-
-# ----------------------------
+# -----------------------------
 # Histogram Comparison
-# ----------------------------
+# -----------------------------
 elif chart_type == "Histogram Comparison":
 
     early_years = df.avg_solve_time[df.year <= 2017]
@@ -169,21 +144,9 @@ elif chart_type == "Histogram Comparison":
 
     st.plotly_chart(fig, use_container_width=True)
 
-    if st.checkbox("Show Code"):
-        st.code("""
-early_years = df.avg_solve_time[df.year <= 2017]
-later_years = df.avg_solve_time[df.year >= 2018]
-
-trace1 = go.Histogram(x=early_years)
-trace2 = go.Histogram(x=later_years)
-
-fig = go.Figure(data=[trace1, trace2])
-fig.show()
-""", language="python")
-
-# ----------------------------
+# -----------------------------
 # Box Plot
-# ----------------------------
+# -----------------------------
 elif chart_type == "Box Plot":
 
     fig = px.box(
@@ -198,9 +161,9 @@ elif chart_type == "Box Plot":
 
     st.plotly_chart(fig, use_container_width=True)
 
-# ----------------------------
+# -----------------------------
 # Bubble Chart
-# ----------------------------
+# -----------------------------
 elif chart_type == "Bubble Chart":
 
     fig = px.scatter(
@@ -217,9 +180,9 @@ elif chart_type == "Bubble Chart":
 
     st.plotly_chart(fig, use_container_width=True)
 
-# ----------------------------
+# -----------------------------
 # Correlation Heatmap
-# ----------------------------
+# -----------------------------
 elif chart_type == "Correlation Heatmap":
 
     corr = df.corr()
@@ -242,9 +205,9 @@ elif chart_type == "Correlation Heatmap":
 
     st.plotly_chart(fig, use_container_width=True)
 
-# ----------------------------
+# -----------------------------
 # Scatter Matrix
-# ----------------------------
+# -----------------------------
 elif chart_type == "Scatter Matrix":
 
     fig = px.scatter_matrix(
@@ -263,3 +226,44 @@ elif chart_type == "Scatter Matrix":
     fig.update_layout(template="plotly_white")
 
     st.plotly_chart(fig, use_container_width=True)
+
+# -----------------------------
+# 3D Scatter Plot
+# -----------------------------
+elif chart_type == "3D Scatter Plot":
+
+    fig = go.Figure(data=[go.Scatter3d(
+        x=df["practice_hours"],
+        y=df["avg_solve_time"],
+        z=df["stress_level"],
+        mode='markers',
+        marker=dict(
+            size=8,
+            color=df["social_media_hours"],
+            colorscale='Viridis',
+            opacity=0.8
+        )
+    )])
+
+    fig.update_layout(
+        title="3D Visualization of Performance Factors",
+        scene=dict(
+            xaxis_title="Practice Hours",
+            yaxis_title="Average Solve Time",
+            zaxis_title="Stress Level"
+        ),
+        template="plotly_white"
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+
+    if st.checkbox("Show Code"):
+        st.code("""
+fig = go.Figure(data=[go.Scatter3d(
+    x=df["practice_hours"],
+    y=df["avg_solve_time"],
+    z=df["stress_level"],
+    mode='markers'
+)])
+fig.show()
+""", language="python")
